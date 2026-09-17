@@ -2,8 +2,19 @@ import express, { Request, Response } from 'express';
 import path from 'path';
 import { createServer as createViteServer } from 'vite';
 import { Wallpaper, Category, DailyWallpaper, DownloadRecord, AdminStats } from './src/types.ts';
+import fs from 'fs';
+import path from 'path';
+import express from 'express';
 
 const app = express();
+// Ensure uploads folder exists
+const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// Serve uploaded images statically
+app.use('/uploads', express.static(uploadsDir));
 const PORT = 3000;
 
 app.use(express.json({ limit: '25mb' }));
@@ -480,6 +491,47 @@ app.post('/api/admin/wallpapers', (req: Request, res: Response) => {
   
 
   const category = categories.find((c) => c.id === category_id);
+
+  app.post('/api/admin/wallpapers', async (req, res) => {
+  try {
+    const { title, category_id, is_daily, is_premium, aspect_ratio } = req.body;
+    let { image_url, thumbnail_url } = req.body;
+
+    // Helper function to convert base64 image data to a permanent file on disk
+    const saveBase64ToFile = (base64Str: string, prefix: string) => {
+      if (!base64Str || !base64Str.startsWith('data:image/')) {
+        return base64Str; // Already a regular https:// URL
+      }
+      const matches = base64Str.match(/^data:image\/([a-zA-Z0-9]+);base64,(.+)$/);
+      if (!matches) return base64Str;
+
+      const ext = matches[1] === 'jpeg' ? 'jpg' : matches[1];
+      const buffer = Buffer.from(matches[2], 'base64');
+      const filename = `${prefix}_${Date.now()}_${Math.floor(Math.random() * 1000)}.${ext}`;
+      const filePath = path.join(uploadsDir, filename);
+
+      fs.writeFileSync(filePath, buffer);
+
+      // Determine the host URL dynamically from the request (works on Cloud Run and custom domains)
+      const host = req.get('host') || 'daily-wallpapers.onrender.com';
+      const protocol = req.protocol === 'http' && !req.get('x-forwarded-proto') ? 'http' : 'https';
+      return `${protocol}://${host}/uploads/${filename}`;
+    };
+
+    // If an admin uploaded a raw file/base64, convert both full and thumbnail images
+    if (image_url) {
+      image_url = saveBase64ToFile(image_url, 'full');
+    }
+    if (thumbnail_url) {
+      thumbnail_url = saveBase64ToFile(thumbnail_url, 'thumb');
+    } else {
+      thumbnail_url = image_url;
+    }
+
+    // Now proceed with your existing database insert query:
+    // db.run("INSERT INTO wallpapers (title, image_url, thumbnail_url, ...) VALUES (...)");
+    
+    // ... [keep your existing insert logic here using the clean image_url and thumbnail_url]
 
   // Compute aspect ratio description
   const ratioVal = width / height;
