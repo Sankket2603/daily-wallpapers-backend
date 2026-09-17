@@ -469,11 +469,15 @@ app.get('/api/admin/stats', (_req: Request, res: Response) => {
 
 // POST /api/admin/wallpapers
 app.post('/api/admin/wallpapers', (req: Request, res: Response) => {
-  const { title, description, category_id, image_url, width = 1080, height = 1920, is_featured = false, is_daily = false, file_size = 3500000 } = req.body;
-
-  if (!title || !category_id || !image_url) {
+  const { title, description, category_id, image_url, original_url, width = 1080, height = 1920, is_featured = false, is_daily = false, file_size = 3500000 } = req.body;
+  const rawImage = (image_url || original_url || '').trim();
+  if (!title || !category_id || !rawImage) {
     return res.status(400).json({ error: 'Title, category, and image URL are required' });
   }
+  const isDataUri = rawImage.startsWith('data:') || rawImage.startsWith('blob:');
+  const baseImg = isDataUri ? rawImage : rawImage.split('?')[0];
+
+  
 
   const category = categories.find((c) => c.id === category_id);
 
@@ -487,17 +491,17 @@ app.post('/api/admin/wallpapers', (req: Request, res: Response) => {
   else if (Math.abs(ratioVal - 20 / 9) < 0.05) aspect_ratio = '20:9';
 
   // Multi-resolution CDN URL generation simulation (as specified in specs Section 6 & 25)
-  const baseImg = image_url.split('?')[0];
+  
   const newWp: Wallpaper = {
     id: `wp-${Date.now()}`,
     title: title.trim(),
     description: (description || '').trim(),
     category_id,
     category_name: category ? category.name : 'General',
-    original_url: `${baseImg}?auto=format&fit=crop&w=${Math.max(width, 2160)}&q=95`,
-    thumbnail_url: `${baseImg}?auto=format&fit=crop&w=400&q=80`,
-    medium_url: `${baseImg}?auto=format&fit=crop&w=1080&q=85`,
-    full_url: `${baseImg}?auto=format&fit=crop&w=${width}&q=90`,
+    original_url: isDataUri ? rawImage : `${baseImg}?auto=format&fit=crop&w=${Math.max(width, 2160)}&q=95`,
+    thumbnail_url: isDataUri ? rawImage : `${baseImg}?auto=format&fit=crop&w=400&q=80`,
+    medium_url: isDataUri ? rawImage : `${baseImg}?auto=format&fit=crop&w=1080&q=85`,
+    full_url: isDataUri ? rawImage : `${baseImg}?auto=format&fit=crop&w=${width}&q=90`,
     width: Number(width) || 1080,
     height: Number(height) || 1920,
     aspect_ratio,

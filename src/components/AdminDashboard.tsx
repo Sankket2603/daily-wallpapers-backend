@@ -92,15 +92,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     }
 
     setUploadFile(file);
-    const objectUrl = URL.createObjectURL(file);
-    setPreviewUrl(objectUrl);
-
-    // Read image dimensions
-    const img = new Image();
-    img.onload = () => {
-      setImageDimensions({ width: img.naturalWidth, height: img.naturalHeight });
+    const reader = new FileReader();
+    reader.onload = (loadEvt) => {
+      const resultStr = loadEvt.target?.result as string;
+      setPreviewUrl(resultStr);
+      const img = new Image();
+      img.onload = () => {
+        setImageDimensions({ width: img.naturalWidth, height: img.naturalHeight });
+      };
+      img.src = resultStr;
     };
-    img.src = objectUrl;
+    reader.readAsDataURL(file);
 
     if (!title) {
       const cleanName = file.name.replace(/\.[^/.]+$/, '').replace(/[_-]/g, ' ');
@@ -133,6 +135,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         description,
         category_id: categoryId,
         original_url: previewUrl,
+        image_url: previewUrl,
+        image_url: previewUrl,
         width: imageDimensions?.width || 1080,
         height: imageDimensions?.height || 1920,
         file_size: uploadFile?.size || 3450000,
