@@ -137,6 +137,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         original_url: previewUrl,
         image_url: previewUrl,
         image_url: previewUrl,
+        image_url: previewUrl,
         width: imageDimensions?.width || 1080,
         height: imageDimensions?.height || 1920,
         file_size: uploadFile?.size || 3450000,
