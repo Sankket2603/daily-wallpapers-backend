@@ -1,13 +1,13 @@
 import express, { Request, Response } from 'express';
 import path from 'path';
+import fs from 'fs';
 import { createServer as createViteServer } from 'vite';
 import { Wallpaper, Category, DailyWallpaper, DownloadRecord, AdminStats } from './src/types.ts';
-import fs from 'fs';
-import path from 'path';
-import express from 'express';
 
 const app = express();
-// Ensure uploads folder exists
+const PORT = 3000;
+
+// Ensure public uploads folder exists for saved image files
 const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
@@ -15,7 +15,6 @@ if (!fs.existsSync(uploadsDir)) {
 
 // Serve uploaded images statically
 app.use('/uploads', express.static(uploadsDir));
-const PORT = 3000;
 
 app.use(express.json({ limit: '25mb' }));
 app.use(express.urlencoded({ extended: true, limit: '25mb' }));
@@ -80,7 +79,7 @@ let categories: Category[] = [
   },
 ];
 
-// Initial Curated Wallpapers with true diverse dimensions (9:16, 16:9, 1:1, 4:5, 20:9)
+// Initial Curated Wallpapers
 let wallpapers: Wallpaper[] = [
   {
     id: 'wp-1',
@@ -168,94 +167,6 @@ let wallpapers: Wallpaper[] = [
     downloads: 1650,
     views: 7890,
     created_at: new Date(Date.now() - 86400000 * 4).toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 'wp-5',
-    title: 'Tokyo Midnight Cyber',
-    description: 'Moody neon reflections along a rain-swept alley in Shibuya.',
-    category_id: 'cat-gaming',
-    category_name: 'Gaming',
-    original_url: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=2160&q=95',
-    thumbnail_url: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=400&q=80',
-    medium_url: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1080&q=85',
-    full_url: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=2160&q=95',
-    width: 1080,
-    height: 1920,
-    aspect_ratio: '9:16',
-    file_size: 4430000,
-    is_featured: true,
-    is_daily: false,
-    publish_date: new Date().toISOString().split('T')[0],
-    downloads: 3200,
-    views: 15300,
-    created_at: new Date(Date.now() - 86400000 * 5).toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 'wp-6',
-    title: 'Porsche 911 Silhouette',
-    description: 'Sculpted German aerodynamics bathed in cinematic studio rim lighting.',
-    category_id: 'cat-cars',
-    category_name: 'Cars',
-    original_url: 'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=2160&q=95',
-    thumbnail_url: 'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=400&q=80',
-    medium_url: 'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=1080&q=85',
-    full_url: 'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=2160&q=95',
-    width: 1080,
-    height: 1920,
-    aspect_ratio: '9:16',
-    file_size: 3210000,
-    is_featured: false,
-    is_daily: false,
-    publish_date: new Date().toISOString().split('T')[0],
-    downloads: 1840,
-    views: 9200,
-    created_at: new Date(Date.now() - 86400000 * 6).toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 'wp-7',
-    title: 'Monolithic Concrete Stairway',
-    description: 'Brutalist architecture with geometric sunbeams casting dramatic high-contrast angles.',
-    category_id: 'cat-architecture',
-    category_name: 'Architecture',
-    original_url: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=2160&q=95',
-    thumbnail_url: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=400&q=80',
-    medium_url: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1080&q=85',
-    full_url: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=2160&q=95',
-    width: 1080,
-    height: 1350,
-    aspect_ratio: '4:5',
-    file_size: 2890000,
-    is_featured: false,
-    is_daily: true,
-    publish_date: new Date().toISOString().split('T')[0],
-    downloads: 940,
-    views: 4120,
-    created_at: new Date(Date.now() - 86400000 * 7).toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 'wp-8',
-    title: 'Chromatic Iridescent Glass',
-    description: 'Prismatic light dispersion refracting through sculpted optic crystal.',
-    category_id: 'cat-abstract',
-    category_name: 'Abstract',
-    original_url: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=2160&q=95',
-    thumbnail_url: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=400&q=80',
-    medium_url: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=1080&q=85',
-    full_url: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=2160&q=95',
-    width: 1920,
-    height: 1080,
-    aspect_ratio: '16:9',
-    file_size: 4780000,
-    is_featured: true,
-    is_daily: false,
-    publish_date: new Date().toISOString().split('T')[0],
-    downloads: 1210,
-    views: 6450,
-    created_at: new Date(Date.now() - 86400000 * 8).toISOString(),
     updated_at: new Date().toISOString(),
   },
 ];
@@ -436,7 +347,6 @@ app.post('/api/favorites', (req: Request, res: Response) => {
 
 // 11. GET /api/downloads
 app.get('/api/downloads', (_req: Request, res: Response) => {
-  // attach wallpaper data
   const populated = downloadsList.map((dl) => ({
     ...dl,
     wallpaper: wallpapers.find((w) => w.id === dl.wallpaper_id),
@@ -451,7 +361,6 @@ app.get('/api/downloads', (_req: Request, res: Response) => {
 // POST /api/admin/login
 app.post('/api/admin/login', (req: Request, res: Response) => {
   const { email, password } = req.body;
-  // Standard admin credential check
   if (email === 'admin@dailywallpapers.app' && password === 'admin123') {
     return res.json({
       token: 'adm_token_' + Buffer.from(email).toString('base64'),
@@ -480,27 +389,30 @@ app.get('/api/admin/stats', (_req: Request, res: Response) => {
 
 // POST /api/admin/wallpapers
 app.post('/api/admin/wallpapers', (req: Request, res: Response) => {
-  const { title, description, category_id, image_url, original_url, width = 1080, height = 1920, is_featured = false, is_daily = false, file_size = 3500000 } = req.body;
-  const rawImage = (image_url || original_url || '').trim();
-  if (!title || !category_id || !rawImage) {
-    return res.status(400).json({ error: 'Title, category, and image URL are required' });
-  }
-  const isDataUri = rawImage.startsWith('data:') || rawImage.startsWith('blob:');
-  const baseImg = isDataUri ? rawImage : rawImage.split('?')[0];
-
-  
-
-  const category = categories.find((c) => c.id === category_id);
-
-  app.post('/api/admin/wallpapers', async (req, res) => {
   try {
-    const { title, category_id, is_daily, is_premium, aspect_ratio } = req.body;
-    let { image_url, thumbnail_url } = req.body;
+    const {
+      title,
+      description,
+      category_id,
+      image_url,
+      thumbnail_url,
+      original_url,
+      width = 1080,
+      height = 1920,
+      is_featured = false,
+      is_daily = false,
+      file_size = 3500000,
+    } = req.body;
 
-    // Helper function to convert base64 image data to a permanent file on disk
+    let rawImage = (image_url || original_url || '').trim();
+    if (!title || !category_id || !rawImage) {
+      return res.status(400).json({ error: 'Title, category, and image URL are required' });
+    }
+
+    // Helper: Convert Base64 upload to actual file in public/uploads/
     const saveBase64ToFile = (base64Str: string, prefix: string) => {
       if (!base64Str || !base64Str.startsWith('data:image/')) {
-        return base64Str; // Already a regular https:// URL
+        return base64Str;
       }
       const matches = base64Str.match(/^data:image\/([a-zA-Z0-9]+);base64,(.+)$/);
       if (!matches) return base64Str;
@@ -508,69 +420,58 @@ app.post('/api/admin/wallpapers', (req: Request, res: Response) => {
       const ext = matches[1] === 'jpeg' ? 'jpg' : matches[1];
       const buffer = Buffer.from(matches[2], 'base64');
       const filename = `${prefix}_${Date.now()}_${Math.floor(Math.random() * 1000)}.${ext}`;
-      const filePath = path.join(uploadsDir, filename);
+      fs.writeFileSync(path.join(uploadsDir, filename), buffer);
 
-      fs.writeFileSync(filePath, buffer);
-
-      // Determine the host URL dynamically from the request (works on Cloud Run and custom domains)
       const host = req.get('host') || 'daily-wallpapers.onrender.com';
-      const protocol = req.protocol === 'http' && !req.get('x-forwarded-proto') ? 'http' : 'https';
-      return `${protocol}://${host}/uploads/${filename}`;
+      const proto = req.get('x-forwarded-proto') || 'https';
+      return `${proto}://${host}/uploads/${filename}`;
     };
 
-    // If an admin uploaded a raw file/base64, convert both full and thumbnail images
-    if (image_url) {
-      image_url = saveBase64ToFile(image_url, 'full');
-    }
-    if (thumbnail_url) {
-      thumbnail_url = saveBase64ToFile(thumbnail_url, 'thumb');
-    } else {
-      thumbnail_url = image_url;
-    }
+    const finalImage = saveBase64ToFile(rawImage, 'full');
+    const finalThumb = thumbnail_url ? saveBase64ToFile(thumbnail_url, 'thumb') : finalImage;
 
-    // Now proceed with your existing database insert query:
-    // db.run("INSERT INTO wallpapers (title, image_url, thumbnail_url, ...) VALUES (...)");
-    
-    // ... [keep your existing insert logic here using the clean image_url and thumbnail_url]
+    const category = categories.find((c) => c.id === category_id);
 
-  // Compute aspect ratio description
-  const ratioVal = width / height;
-  let aspect_ratio = 'Custom';
-  if (Math.abs(ratioVal - 9 / 16) < 0.05) aspect_ratio = '9:16';
-  else if (Math.abs(ratioVal - 16 / 9) < 0.05) aspect_ratio = '16:9';
-  else if (Math.abs(ratioVal - 1) < 0.05) aspect_ratio = '1:1';
-  else if (Math.abs(ratioVal - 4 / 5) < 0.05) aspect_ratio = '4:5';
-  else if (Math.abs(ratioVal - 20 / 9) < 0.05) aspect_ratio = '20:9';
+    // Compute aspect ratio description
+    const ratioVal = Number(width) / Number(height);
+    let aspect_ratio = 'Custom';
+    if (Math.abs(ratioVal - 9 / 16) < 0.05) aspect_ratio = '9:16';
+    else if (Math.abs(ratioVal - 16 / 9) < 0.05) aspect_ratio = '16:9';
+    else if (Math.abs(ratioVal - 1) < 0.05) aspect_ratio = '1:1';
+    else if (Math.abs(ratioVal - 4 / 5) < 0.05) aspect_ratio = '4:5';
+    else if (Math.abs(ratioVal - 20 / 9) < 0.05) aspect_ratio = '20:9';
 
-  // Multi-resolution CDN URL generation simulation (as specified in specs Section 6 & 25)
-  
-  const newWp: Wallpaper = {
-    id: `wp-${Date.now()}`,
-    title: title.trim(),
-    description: (description || '').trim(),
-    category_id,
-    category_name: category ? category.name : 'General',
-    original_url: isDataUri ? rawImage : `${baseImg}?auto=format&fit=crop&w=${Math.max(width, 2160)}&q=95`,
-    thumbnail_url: isDataUri ? rawImage : `${baseImg}?auto=format&fit=crop&w=400&q=80`,
-    medium_url: isDataUri ? rawImage : `${baseImg}?auto=format&fit=crop&w=1080&q=85`,
-    full_url: isDataUri ? rawImage : `${baseImg}?auto=format&fit=crop&w=${width}&q=90`,
-    width: Number(width) || 1080,
-    height: Number(height) || 1920,
-    aspect_ratio,
-    file_size: Number(file_size) || 3500000,
-    is_featured: Boolean(is_featured),
-    is_daily: Boolean(is_daily),
-    publish_date: new Date().toISOString().split('T')[0],
-    downloads: 0,
-    views: 0,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  };
+    const newWp: Wallpaper = {
+      id: `wp-${Date.now()}`,
+      title: title.trim(),
+      description: (description || '').trim(),
+      category_id,
+      category_name: category ? category.name : 'General',
+      original_url: finalImage,
+      thumbnail_url: finalThumb,
+      medium_url: finalImage,
+      full_url: finalImage,
+      width: Number(width) || 1080,
+      height: Number(height) || 1920,
+      aspect_ratio,
+      file_size: Number(file_size) || 3500000,
+      is_featured: Boolean(is_featured),
+      is_daily: Boolean(is_daily),
+      publish_date: new Date().toISOString().split('T')[0],
+      downloads: 0,
+      views: 0,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
 
-  wallpapers.unshift(newWp);
-  populateCategoryCounts();
+    wallpapers.unshift(newWp);
+    populateCategoryCounts();
 
-  res.status(201).json({ data: newWp, message: 'Wallpaper published successfully' });
+    res.status(201).json({ data: newWp, message: 'Wallpaper published successfully' });
+  } catch (err) {
+    console.error('Error creating wallpaper:', err);
+    res.status(500).json({ error: 'Failed to create wallpaper' });
+  }
 });
 
 // PUT /api/admin/wallpapers/:id

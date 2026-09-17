@@ -72,7 +72,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     }
   };
 
-  // Handle Image File Selection & Auto Dimension Reading (Section 25 & 26)
+  // Handle Image File Selection & Auto Dimension Reading
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUploadError('');
     const file = e.target.files?.[0];
@@ -135,9 +135,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         description,
         category_id: categoryId,
         original_url: previewUrl,
-        image_url: previewUrl,
-        image_url: previewUrl,
-        image_url: previewUrl,
+        thumbnail_url: previewUrl,
+        medium_url: previewUrl,
+        full_url: previewUrl,
         width: imageDimensions?.width || 1080,
         height: imageDimensions?.height || 1920,
         file_size: uploadFile?.size || 3450000,
@@ -293,7 +293,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </div>
       </div>
 
-      {/* 1. OVERVIEW & ANALYTICS VIEW (Section 23) */}
+      {/* 1. OVERVIEW & ANALYTICS VIEW */}
       {activeView === 'overview' && (
         <div className="space-y-6">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -350,17 +350,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </div>
       )}
 
-      {/* 2. UPLOAD WALLPAPER VIEW (Sections 24, 25, 26, 48) */}
+      {/* 2. UPLOAD WALLPAPER VIEW */}
       {activeView === 'upload' && (
         <div className="bg-white rounded-3xl p-6 border border-neutral-200/80 shadow-xs max-w-2xl mx-auto space-y-5">
           <div>
             <h3 className="text-lg font-bold text-[#171717]">Upload Wallpaper</h3>
             <p className="text-xs text-neutral-500 mt-0.5">
-              Images will be automatically validated, resized into thumbnail/medium/full, and stored.
+              Images will be automatically validated, saved to disk, and published to your mobile app.
             </p>
           </div>
 
-          {/* Copyright Disclosure Warning (Section 48) */}
+          {/* Copyright Disclosure Warning */}
           <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-amber-900 text-xs flex items-start gap-2">
             <ShieldAlert className="w-4 h-4 shrink-0 text-amber-600 mt-0.5" />
             <span>
@@ -527,14 +527,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
             {uploadError && (
               <p className="text-xs text-rose-600 flex items-center gap-1">
-                <AlertCircle className="w-3.5 h-3.5" />
+                <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                 {uploadError}
               </p>
             )}
 
             {publishSuccess && (
               <p className="text-xs text-emerald-600 flex items-center gap-1 font-semibold">
-                <CheckCircle2 className="w-4 h-4" />
+                <CheckCircle2 className="w-4 h-4 shrink-0" />
                 Wallpaper successfully published to live catalogue!
               </p>
             )}
@@ -543,7 +543,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             <button
               type="submit"
               disabled={isPublishing}
-              className="w-full py-3 rounded-xl font-bold text-xs bg-[#6C63FF] hover:bg-[#584ee8] disabled:opacity-50 text-white transition active:scale-98 shadow-md"
+              className="w-full py-3 rounded-xl font-bold text-xs bg-[#6C63FF] hover:bg-[#584ee8] disabled:opacity-50 text-white transition active:scale-98 shadow-md cursor-pointer"
             >
               {isPublishing ? 'Publishing & Generating CDN Versions...' : 'PUBLISH WALLPAPER'}
             </button>
@@ -560,7 +560,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             </h3>
             <button
               onClick={() => setActiveView('upload')}
-              className="px-3 py-1.5 rounded-xl bg-[#6C63FF] text-white text-xs font-semibold flex items-center gap-1"
+              className="px-3 py-1.5 rounded-xl bg-[#6C63FF] text-white text-xs font-semibold flex items-center gap-1 cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" /> Add New
             </button>
@@ -594,7 +594,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   {/* Toggle Daily */}
                   <button
                     onClick={() => onToggleStatus(wp.id, 'is_daily')}
-                    className={`px-2 py-1 rounded-lg text-[11px] font-semibold border transition ${
+                    className={`px-2 py-1 rounded-lg text-[11px] font-semibold border transition cursor-pointer ${
                       wp.is_daily
                         ? 'bg-[#6C63FF]/10 text-[#6C63FF] border-[#6C63FF]/30'
                         : 'bg-neutral-50 text-neutral-500 border-neutral-200'
@@ -606,7 +606,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   {/* Toggle Featured */}
                   <button
                     onClick={() => onToggleStatus(wp.id, 'is_featured')}
-                    className={`px-2 py-1 rounded-lg text-[11px] font-semibold border transition ${
+                    className={`px-2 py-1 rounded-lg text-[11px] font-semibold border transition cursor-pointer ${
                       wp.is_featured
                         ? 'bg-amber-50 text-amber-700 border-amber-200'
                         : 'bg-neutral-50 text-neutral-500 border-neutral-200'
@@ -618,7 +618,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   {/* Delete */}
                   <button
                     onClick={() => onDeleteWallpaper(wp.id)}
-                    className="p-1.5 rounded-lg text-neutral-400 hover:text-rose-600 hover:bg-neutral-50 transition"
+                    className="p-1.5 rounded-lg text-neutral-400 hover:text-rose-600 hover:bg-neutral-50 transition cursor-pointer"
                     title="Delete Wallpaper"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -683,7 +683,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
             <button
               type="submit"
-              className="py-2.5 px-4 rounded-xl font-bold text-xs bg-[#6C63FF] hover:bg-[#584ee8] text-white transition flex items-center justify-center gap-1.5"
+              className="py-2.5 px-4 rounded-xl font-bold text-xs bg-[#6C63FF] hover:bg-[#584ee8] text-white transition flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" /> Add Category
             </button>
