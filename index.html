@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function() {
+        try {
+          var originalFetch = window.fetch;
+          var currentFetch = originalFetch;
+          // Ensure window.fetch has both a getter and a setter to allow proxies/interceptors without throwing
+          Object.defineProperty(window, 'fetch', {
+            get: function() {
+              return currentFetch;
+            },
+            set: function(val) {
+              currentFetch = val;
+            },
+            configurable: true,
+            enumerable: true
+          });
+        } catch (e) {
+          try {
+            if (window.Window && window.Window.prototype) {
+              var protoFetch = window.Window.prototype.fetch;
+              var curProto = protoFetch;
+              Object.defineProperty(window.Window.prototype, 'fetch', {
+                get: function() {
+                  return curProto;
+                },
+                set: function(val) {
+                  curProto = val;
+                },
+                configurable: true,
+                enumerable: true
+              });
+            }
+          } catch (e2) {}
+        }
+      })();
+    </script>
+    <title>Daily Wallpapers — A new wallpaper every day</title>
+    <meta name="description" content="A minimal, elegant wallpaper discovery and download application. Discover beautiful wallpapers, preview in full resolution, and apply seamlessly." />
+    <meta property="og:title" content="Daily Wallpapers — A new wallpaper every day" />
+    <meta property="og:description" content="A minimal, elegant wallpaper discovery and download application." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
